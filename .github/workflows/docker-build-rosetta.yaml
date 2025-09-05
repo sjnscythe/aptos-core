@@ -1,27 +1,25 @@
-# Continuously build Rosetta
-name: Docker Build Rosetta
-
-on:
-  schedule:
-    - cron: "0 9 * * 1" # once a week
-  pull_request:
-    paths:
-      - ".github/workflows/docker-build-rosetta.yaml"
-      # build on changes to dockerfile and build script
-      - "docker/rosetta/docker-build-rosetta.sh"
-      - "docker/rosetta/rosetta.Dockerfile"
-
-permissions:
-  contents: read
-  id-token: write #required for GCP Workload Identity federation
-
-jobs:
-  build:
-    runs-on: runs-on,cpu=64,family=c7,disk=large,image=aptos-ubuntu-x64,run-id=${{ github.run_id }}
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: aptos-labs/aptos-core/.github/actions/buildx-setup@main
-
-      - name: Build rosetta
-        run: GIT_REF=main docker/rosetta/docker-build-rosetta.sh
+*** Begin Patch
+*** Update File: .github/workflows/docker-build-rosetta.yaml
+@@
+ name: Docker Build Rosetta
+@@
+ jobs:
+   build:
+     runs-on: runs-on,cpu=64,family=c7,disk=large,image=aptos-ubuntu-x64,run-id=${{ github.run_id }}
+     steps:
+       - uses: actions/checkout@v4
++      # PoC marker: harmless echo so you can see the workflow definitely fired.
++      - name: PoC marker (safe)
++        run: |
++          echo "[ROSETTA-POC] workflow triggered: event=$GITHUB_EVENT_NAME run=$GITHUB_RUN_ID ref=$GITHUB_REF"
++          echo "### Rosetta PoC Triggered" >> "$GITHUB_STEP_SUMMARY"
++          echo "- Event: $GITHUB_EVENT_NAME" >> "$GITHUB_STEP_SUMMARY"
++          echo "- Run: $GITHUB_RUN_ID" >> "$GITHUB_STEP_SUMMARY"
+ 
+       - uses: aptos-labs/aptos-core/.github/actions/buildx-setup@main
+ 
+       - name: Build rosetta
+-        run: GIT_REF=main docker/rosetta/docker-build-rosetta.sh
++        run: GIT_REF=main docker/rosetta/docker-build-rosetta.sh
+ 
+*** End Patch
