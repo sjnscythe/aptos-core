@@ -1,4 +1,4 @@
-# Transaction Code Generator
+# Transaction Code Generator poc
 This dynamically generates code for constants that represent transactions stored as JSON files. It builds a set of Rust constants that point to these JSON files and optionally creates a function to retrieve the name of a transaction based on its constant value.
 
 ## Features
